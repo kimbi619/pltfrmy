@@ -1,7 +1,8 @@
 const bcrypt = require('bcrypt');
 const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const jwt = require('./authToken');
 
+const prisma = new PrismaClient();
 const SALT_ROUNDS = 10;
 
 async function createUser(userData) {
@@ -32,8 +33,18 @@ async function verifyPassword(email, password) {
   return userWithoutPassword;
 }
 
+async function generateTokens(user) {
+  const accessToken = jwt.generateAccessToken(user.id);
+  const refreshToken = jwt.generateRefreshToken(user.id);
+  
+  return {
+    accessToken,
+    refreshToken
+  };
+}
 
 module.exports = {
   createUser,
-  verifyPassword
+  verifyPassword,
+  generateTokens
 };

@@ -8,6 +8,11 @@ require('dotenv').config();
 const db = require('./config/database');
 // const seed_db = require('./prisma/seed');
 
+
+const authRoutes = require('./routes/authRoutes');
+// const taskRoutes = require('./routes/taskRoutes');
+// const calendarRoutes = require('./routes/calendarRoutes');
+
 const app = express();
 
 app.use(helmet());
@@ -15,6 +20,10 @@ app.use(cors());
 app.use(morgan('dev')); 
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: false })); 
+
+app.use('/api/auth', authRoutes);
+// app.use('/api/tasks', taskRoutes);
+// app.use('/api/calendar', calendarRoutes);
 
 
 
