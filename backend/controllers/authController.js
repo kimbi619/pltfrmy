@@ -1,6 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const auth = require('../config/authenticate');
 const auth_token = require('../config/authToken');
+const emailService = require('../services/emailService');
 
 const prisma = new PrismaClient();
 
@@ -11,12 +12,24 @@ exports.register = async (req, res, next) => {
     
     const tokens = await auth.generateTokens(user);
     
+
+    emailService.sendWelcomeEmail(user).catch(err => 
+      console.error('Failed to send welcome email:', err)
+    );
+
+    
     return res.status(201).json({
       success: true,
       user,
       ...tokens
     });
   } catch (error) {
+    if (error.status) {
+      return res.status(error.status).json({
+        success: false,
+        message: error.message
+      });
+    }
     next(error);
   }
 };
