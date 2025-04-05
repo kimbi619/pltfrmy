@@ -32,6 +32,7 @@ async function verifyPassword(email, password) {
   return userWithoutPassword;
 }
 
+
 module.exports = {
   createUser,
   verifyPassword
