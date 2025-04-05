@@ -1,0 +1,129 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id String @id @default(uuid())
+
+  first_name String
+
+  last_name String
+
+  email String @unique
+
+  role Role @default(BASIC)
+
+  password String
+
+  created_at DateTime @default(now())
+
+  updated_at DateTime @updatedAt
+}
+
+model Task {
+  id Int @id @default(autoincrement())
+
+  title String
+
+  description String
+
+  status String
+
+  priority String
+
+  due_date DateTime
+
+  start_date DateTime
+
+  created_at DateTime @default(now())
+
+  updated_at DateTime @updatedAt
+
+  google_calendar_event String?
+  
+  user_id String
+
+  // user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  // subtasks Subtask[]
+  // comments Comment[]
+  // categories Category[] @relation("TaskToCategory")
+}
+
+model Category {
+  id Int @id @default(autoincrement())
+
+  name String
+
+  description String
+
+  created_at DateTime @default(now())
+
+  updated_at DateTime @updatedAt
+
+  // tasks Task[] @relation("TaskToCategory")
+
+}
+
+model Subtask {
+  id Int @id @default(autoincrement())
+
+  title String
+
+  description String
+
+  status String
+
+  priority String
+
+  due_date DateTime
+
+  start_date DateTime
+
+  created_at DateTime @default(now())
+
+  updated_at DateTime @updatedAt
+
+  task_id Int
+
+  // task Task @relation(fields: [task_id], references: [id], onDelete: Cascade)
+
+}
+
+model Comment {
+  id Int @id @default(autoincrement())
+
+  content String
+
+  created_at DateTime @default(now())
+
+  updated_at DateTime @updatedAt
+
+  task_id Int
+
+  // task Task @relation(fields: [task_id], references: [id], onDelete: Cascade)
+}
+
+model Tag {
+  id Int @id @default(autoincrement())
+
+  name String
+
+  description String
+
+  created_at DateTime @default(now())
+
+  updated_at DateTime @updatedAt
+}
+
+
+enum Role {
+  BASIC
+  ADMIN
+}
