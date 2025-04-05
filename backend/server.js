@@ -10,7 +10,7 @@ const db = require('./config/database');
 
 
 const authRoutes = require('./routes/authRoutes');
-// const taskRoutes = require('./routes/taskRoutes');
+const taskRoutes = require('./routes/taskRoutes');
 // const calendarRoutes = require('./routes/calendarRoutes');
 
 const app = express();
@@ -22,7 +22,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false })); 
 
 app.use('/api/auth', authRoutes);
-// app.use('/api/tasks', taskRoutes);
+app.use('/api/tasks', taskRoutes);
 // app.use('/api/calendar', calendarRoutes);
 
 
