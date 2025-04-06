@@ -1,101 +1,51 @@
-import { Component, type OnInit } from "@angular/core"
-import { CommonModule } from "@angular/common"
-import { FormsModule } from "@angular/forms"
-import { TodoItemComponent } from "../task-item/task-item.component"
-import type { TodoService } from "../../services/todo.service"
-import type { Todo } from "../../models/todo.model"
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: "app-list",
+  selector: 'app-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, TodoItemComponent],
+  imports: [CommonModule],
   template: `
-    <div class="todo-list-container">
-      <div class="todo-list-header">
-        <h1>{{ currentView }}</h1>
-        <span class="todo-count">{{ todos.length }}</span>
+    <div class="task-list">
+      <div *ngIf="tasks.length === 0" class="no-tasks">
+        <p>No tasks found</p>
       </div>
       
-      <div class="add-task-container">
-        <button class="add-task-btn" (click)="showAddTaskForm = !showAddTaskForm">
-          <i class="fas fa-plus"></i>
-          Add New Task
-        </button>
-      </div>
-      
-      <div *ngIf="showAddTaskForm" class="add-task-form">
-        <input 
-          type="text" 
-          [(ngModel)]="newTaskTitle" 
-          placeholder="Task title" 
-          class="add-task-input"
-        />
-        <div class="add-task-actions">
-          <button class="cancel-btn" (click)="cancelAddTask()">Cancel</button>
-          <button class="save-btn" (click)="addTask()" [disabled]="!newTaskTitle.trim()">
-            Save
+      <div *ngFor="let task of tasks" class="task-item" (click)="selectTask(task)">
+        <div class="task-checkbox">
+          <input type="checkbox" [checked]="task.completed" (click)="$event.stopPropagation(); toggleComplete(task)">
+        </div>
+        <div class="task-content">
+          <h3 [class.completed]="task.completed">{{ task.title }}</h3>
+          <div class="task-meta">
+            <span *ngIf="task.dueDate" class="due-date">
+              <i class="far fa-calendar"></i> {{ task.dueDate | date:'shortDate' }}
+            </span>
+            <div class="task-tags">
+              <span *ngFor="let tag of task.tags" class="task-tag">{{ tag }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="task-actions">
+          <button class="priority-indicator" [class]="'priority-' + task.priority">
+            {{ task.priority }}
           </button>
         </div>
       </div>
-      
-      <div class="todo-list">
-        <app-todo-item 
-          *ngFor="let todo of todos" 
-          [todo]="todo"
-          (toggleComplete)="toggleTodoComplete($event)"
-          (openDetails)="openTodoDetails($event)"
-        ></app-todo-item>
-      </div>
     </div>
   `,
+  styleUrls: ['./list.component.scss']
 })
-export class TodoListComponent implements OnInit {
-  currentView = "Today"
-  todos: Todo[] = []
-  showAddTaskForm = false
-  newTaskTitle = ""
+export class TodoListComponent {
+  @Input() tasks: any[] = [];
+  @Output() taskSelected = new EventEmitter<any>();
 
-  // constructor(private todoService: TodoService) {}
-
-  ngOnInit() {
+  selectTask(task: any): void {
+    this.taskSelected.emit(task);
   }
 
-  loadTodos() {
-  }
-
-  addTask() {
-    // if (this.newTaskTitle.trim()) {
-    //   this.todoService.addTodo({
-    //     id: Date.now(),
-    //     title: this.newTaskTitle,
-    //     completed: false,
-    //     date: new Date(),
-    //     list: null,
-    //     tags: [],
-    //   })
-
-    //   this.newTaskTitle = ""
-    //   this.showAddTaskForm = false
-    //   this.loadTodos()
-    // }
-  }
-
-  cancelAddTask() {
-    this.newTaskTitle = ""
-    this.showAddTaskForm = false
-  }
-
-  toggleTodoComplete(todoId: number) {
-    // this.todoService.toggleTodoComplete(todoId)
-    // this.loadTodos()
-  }
-
-  openTodoDetails(todoId: number) {
-    console.log("Opening details for todo:", todoId)
-  }
-
-  private capitalizeFirstLetter(string: string): string {
-    return string.charAt(0).toUpperCase() + string.slice(1)
+  toggleComplete(task: any): void {
+    task.completed = !task.completed;
   }
 }
 
