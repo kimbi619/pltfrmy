@@ -2,7 +2,6 @@ import { Component } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { FormsModule } from "@angular/forms"
 import { SearchComponent } from "../search/search.component"
-import type { TodoService } from "../../services/todo.service"
 
 @Component({
   selector: "app-sidebar",

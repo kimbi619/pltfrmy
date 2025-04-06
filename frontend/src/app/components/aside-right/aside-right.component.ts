@@ -60,7 +60,7 @@ import { FormsModule } from '@angular/forms';
           <label>Tags</label>
           <div class="tags-container">
             <span *ngFor="let tag of selectedTask.tags || []" class="tag">
-              {{ tag }}
+              {{ tag?.name || tag }}
               <i class="fas fa-times" (click)="removeTag(tag)"></i>
             </span>
             <input

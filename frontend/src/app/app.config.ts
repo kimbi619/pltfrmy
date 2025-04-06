@@ -9,6 +9,7 @@ import {
 } from '@angular/common/http';
 import { routes } from './app.routes';
 import { AuthService } from './services/auth.service';
+import { TaskService } from './services/task.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
@@ -28,6 +29,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
-    provideHttpClient(withInterceptors([authInterceptor]))
+    provideHttpClient(withInterceptors([authInterceptor])),
+    TaskService 
   ]
 };

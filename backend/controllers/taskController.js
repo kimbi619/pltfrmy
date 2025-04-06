@@ -170,7 +170,12 @@ exports.updateTask = async (req, res, next) => {
       }
     }
     
-    return apiResponse.success(res, 'Task updated successfully', updatedTask);
+    return res.status(202).json({
+      success: true,
+      task: updatedTask,
+      message: 'Task not found'
+    });
+    
   } catch (error) {
     next(error);
   }
