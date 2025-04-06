@@ -1,10 +1,10 @@
-import { Component } from "@angular/core"
-import { CommonModule } from "@angular/common"
-import { FormsModule } from "@angular/forms"
-import { type Router, type ActivatedRoute, RouterLink } from "@angular/router"
-import type { AuthService } from "../../../services/auth.service"
+import { Component, OnInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { Router, ActivatedRoute, RouterLink } from "@angular/router";
+import { AuthService } from "../../../services/auth.service";
 
-declare const gapi: any
+declare const gapi: any;
 
 @Component({
   selector: "app-login",
@@ -90,72 +90,56 @@ declare const gapi: any
     </div>
   `,
 })
-export class LoginComponent {
-  email = ""
-  password = ""
-  error = ""
-  isLoading = false
-  returnUrl = "/"
+export class LoginComponent implements OnInit {
+  email = "";
+  password = "";
+  error = "";
+  isLoading = false;
+  returnUrl = "/dashboard";
 
   constructor(
-    // private authService: AuthService,
-    // private router: Router,
-    // private route: ActivatedRoute,
+    private authService: AuthService,
+    private router: Router,
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
-    this.initGoogleSignIn()
+    // Get return URL from route parameters or default to '/dashboard'
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+    
+    // Check if already logged in
+    if (this.authService.isLoggedIn()) {
+      this.router.navigate([this.returnUrl]);
+    }
+    
+    this.initGoogleSignIn();
   }
 
   onSubmit(): void {
     if (!this.email || !this.password) {
-      return
+      return;
     }
 
-    this.isLoading = true
-    this.error = ""
+    this.isLoading = true;
+    this.error = "";
 
-    // this.authService.login(this.email, this.password).subscribe({
-    //   next: () => {
-    //     this.router.navigate([this.returnUrl])
-    //   },
-    //   error: (error) => {
-    //     this.error = error.message || "Login failed. Please try again."
-    //     this.isLoading = false
-    //   },
-    // })
+    this.authService.login(this.email, this.password).subscribe({
+      next: () => {
+        this.router.navigate([this.returnUrl]);
+      },
+      error: (error) => {
+        this.error = error.message || "Login failed. Please try again.";
+        this.isLoading = false;
+      },
+    });
   }
 
   initGoogleSignIn(): void {
-    console.log("Google Sign-In initialized")
+    console.log("Google Sign-In initialized");
   }
 
   signInWithGoogle(): void {
-    this.isLoading = true
-
-    const mockGoogleUser = {
-      getBasicProfile: () => ({
-        getId: () => "google_123456789",
-        getGivenName: () => "Google",
-        getFamilyName: () => "User",
-        getEmail: () => "google.user@example.com",
-      }),
-      getAuthResponse: () => ({
-        id_token: "mock_google_token_" + Math.random().toString(36).substring(2),
-      }),
-    }
-
-    setTimeout(() => {
-      // this.authService.googleLogin(mockGoogleUser).subscribe({
-      //   next: () => {
-      //     this.router.navigate([this.returnUrl])
-      //   },
-      //   error: (error) => {
-      //     this.error = error.message || "Google login failed. Please try again."
-      //     this.isLoading = false
-      //   },
-      // })
-    }, 1000) 
-  }
+    this.isLoading = true;
+    this.error = "";}
 }
 

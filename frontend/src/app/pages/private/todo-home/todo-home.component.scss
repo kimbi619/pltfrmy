@@ -24,7 +24,7 @@
 }
 
 .app-aside-right {
-  width: 600px;
+  width: clamp(300px, 30vw, 600px);
   height: 100vh;
   flex-shrink: 0;
   overflow-y: auto;

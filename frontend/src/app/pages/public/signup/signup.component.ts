@@ -1,9 +1,9 @@
-import { Component } from "@angular/core"
-import { CommonModule } from "@angular/common"
-import { FormsModule } from "@angular/forms"
-import { type Router, RouterLink } from "@angular/router"
-import type { AuthService } from "../../../services/auth.service"
-import type { User } from "../../../models/user.model"
+import { Component } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { Router, RouterLink } from "@angular/router";
+import { AuthService } from "../../../services/auth.service";
+import { User } from "../../../models/user.model";
 
 @Component({
   selector: "app-signup",
@@ -131,41 +131,39 @@ export class SignupComponent {
     lastName: "",
     email: "",
     password: "",
-  }
+  };
 
-  error = ""
-  isLoading = false
+  error = "";
+  isLoading = false;
 
   constructor(
-    // private authService: AuthService,
-    // private router: Router,
+    private authService: AuthService,
+    private router: Router,
   ) {}
 
   onSubmit(): void {
     if (!this.user.firstName || !this.user.lastName || !this.user.email || !this.user.password) {
-      return
+      return;
     }
 
-    this.isLoading = true
-    this.error = ""
+    this.isLoading = true;
+    this.error = "";
 
-    // this.authService.register(this.user).subscribe({
-    //   next: () => {
-    //     this.router.navigate(["/"])
-    //   },
-    //   error: (error) => {
-    //     this.error = error.message || "Registration failed. Please try again."
-    //     this.isLoading = false
-    //   },
-    // })
+    this.authService.register(this.user).subscribe({
+      next: () => {
+        this.router.navigate(["/dashboard"]);
+      },
+      error: (error) => {
+        this.error = error.message || "Registration failed. Please try again.";
+        this.isLoading = false;
+      },
+    });
   }
 
   signUpWithGoogle(): void {
-    // In a real application, you would trigger the Google Sign-In flow
-    // For demo purposes, we'll simulate a successful Google signup
-    this.isLoading = true
+    this.isLoading = true;
 
-    // Simulate Google user object
+    // For demo purposes only - replace with actual Google Sign-In
     const mockGoogleUser = {
       getBasicProfile: () => ({
         getId: () => "google_123456789",
@@ -176,19 +174,19 @@ export class SignupComponent {
       getAuthResponse: () => ({
         id_token: "mock_google_token_" + Math.random().toString(36).substring(2),
       }),
-    }
+    };
 
     setTimeout(() => {
-      // this.authService.googleLogin(mockGoogleUser).subscribe({
-      //   next: () => {
-      //     this.router.navigate(["/"])
-      //   },
-      //   error: (error) => {
-      //     this.error = error.message || "Google signup failed. Please try again."
-      //     this.isLoading = false
-      //   },
-      // })
-    }, 1000) // Simulate network delay
+      this.authService.googleLogin(mockGoogleUser).subscribe({
+        next: () => {
+          this.router.navigate(["/dashboard"]);
+        },
+        error: (error) => {
+          this.error = error.message || "Google signup failed. Please try again.";
+          this.isLoading = false;
+        },
+      });
+    }, 1000);
   }
 }
 
