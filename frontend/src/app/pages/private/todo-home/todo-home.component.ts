@@ -65,11 +65,9 @@ export class TodoHomeComponent implements OnInit {
   constructor(private taskService: TaskService) {}
 
   ngOnInit(): void {
-    // Check screen size
     this.checkScreenSize();
     window.addEventListener('resize', this.checkScreenSize.bind(this));
     
-    // Load tasks
     this.loadTasks();
   }
   

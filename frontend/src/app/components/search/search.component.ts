@@ -24,8 +24,6 @@ export class SearchComponent {
   searchQuery = ""
 
   onSearch() {
-    // Implementation for search functionality
-    console.log("Searching for:", this.searchQuery)
   }
 }
 

@@ -104,10 +104,8 @@ export class LoginComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Get return URL from route parameters or default to '/dashboard'
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
     
-    // Check if already logged in
     if (this.authService.isLoggedIn()) {
       this.router.navigate([this.returnUrl]);
     }

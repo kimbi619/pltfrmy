@@ -163,30 +163,7 @@ export class SignupComponent {
   signUpWithGoogle(): void {
     this.isLoading = true;
 
-    // For demo purposes only - replace with actual Google Sign-In
-    const mockGoogleUser = {
-      getBasicProfile: () => ({
-        getId: () => "google_123456789",
-        getGivenName: () => "Google",
-        getFamilyName: () => "User",
-        getEmail: () => "google.user@example.com",
-      }),
-      getAuthResponse: () => ({
-        id_token: "mock_google_token_" + Math.random().toString(36).substring(2),
-      }),
-    };
-
-    setTimeout(() => {
-      this.authService.googleLogin(mockGoogleUser).subscribe({
-        next: () => {
-          this.router.navigate(["/dashboard"]);
-        },
-        error: (error) => {
-          this.error = error.message || "Google signup failed. Please try again.";
-          this.isLoading = false;
-        },
-      });
-    }, 1000);
+   
   }
 }
 
