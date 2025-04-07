@@ -1,7 +1,8 @@
-import { Component } from "@angular/core"
+import { Component, EventEmitter, Output } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { FormsModule } from "@angular/forms"
 import { SearchComponent } from "../search/search.component"
+import { AuthService } from "../../services/auth.service"
 
 @Component({
   selector: "app-sidebar",
@@ -93,9 +94,15 @@ import { SearchComponent } from "../search/search.component"
   `,
   styleUrl: './sidebar.component.scss'
 })
+
+
 export class SidebarComponent {
   activeSection = "today"
   activeList: number | null = null
+  
+  constructor(private authService: AuthService) {}
+
+  @Output() menuItemSelected = new EventEmitter<string>();
 
   counts = {
     upcoming: 12,
@@ -113,32 +120,39 @@ export class SidebarComponent {
     { id: 2, name: "Tag 2", color: "#ff6b6b" },
   ]
 
-  constructor() {}
 
   setActiveSection(section: string) {
     this.activeSection = section
     this.activeList = null
+    
+    this.menuItemSelected.emit(section);
   }
 
   setActiveList(listId: number) {
     this.activeList = listId
     this.activeSection = ""
+    
+    const selectedList = this.lists.find(list => list.id === listId);
+    if (selectedList) {
+      this.menuItemSelected.emit(selectedList.name);
+    }
   }
 
   addNewList() {
-    console.log("Add new list clicked")
+    console.log("add new list clicked")
   }
 
   addNewTag() {
-    console.log("Add new tag clicked")
+    console.log("goto add new tag clicked")
   }
 
   openSettings() {
-    console.log("Settings clicked")
+    console.log("goto settings clicked")
   }
 
   signOut() {
     console.log("Sign out clicked")
+    this.authService.logout();
   }
 }
 
