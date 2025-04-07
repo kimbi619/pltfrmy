@@ -40,6 +40,10 @@ export interface Category {
   created_at?: string;
   updated_at?: string;
   user_id?: string;
+  _count?: {
+    tasks: number;
+  };
+  color?: string;
 }
 
 export interface Tag {

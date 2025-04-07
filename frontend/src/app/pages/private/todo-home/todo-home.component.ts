@@ -4,7 +4,8 @@ import { SidebarComponent } from '../../../components/sidebar/sidebar.component'
 import { TodoListComponent } from '../../../components/list/list.component';
 import { AsideRightComponent } from '../../../components/aside-right/aside-right.component';
 import { TaskService } from '../../../services/task.service';
-import { Task, TaskRequest } from '../../../models/task.model';
+import { CategoryService } from '../../../services/category.service';
+import { Task, TaskRequest, Category } from '../../../models/task.model';
 
 @Component({
   selector: 'app-todo-home',
@@ -81,7 +82,10 @@ export class TodoHomeComponent implements OnInit {
   isLoading = false;
   error = '';
 
-  constructor(private taskService: TaskService) {}
+  constructor(
+    private taskService: TaskService,
+    private categoryService: CategoryService
+  ) {}
 
   ngOnInit(): void {
     this.checkScreenSize();
@@ -126,6 +130,30 @@ export class TodoHomeComponent implements OnInit {
     });
   }
 
+  loadTasksByCategory(categoryId: number): void {
+    this.isLoading = true;
+    this.error = '';
+
+    this.categoryService.getTasksByCategory(categoryId).subscribe({
+      next: (response) => {
+        let tasks = [];
+        if (response && response.tasks) {
+          tasks = response.tasks;
+        } else if (Array.isArray(response)) {
+          tasks = response;
+        }
+
+        this.filteredTasks = tasks;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.error = err.message || 'Failed to load category tasks';
+        this.isLoading = false;
+        console.error('Error loading category tasks:', err);
+      },
+    });
+  }
+
   checkScreenSize(): void {
     if (window.innerWidth > 768) {
       this.showLeftSidebar = true;
@@ -142,13 +170,20 @@ export class TodoHomeComponent implements OnInit {
   }
 
   onMenuItemSelected(section: string): void {
-    this.selectedSection = section;
+    console.log('Menu item selected:', section);
+
+    if (section.startsWith('category:')) {
+      const categoryId = parseInt(section.split(':')[1], 10);
+      this.selectedSection = 'Category Tasks';
+      this.loadTasksByCategory(categoryId);
+    } else {
+      this.selectedSection = section;
+      this.loadTasks();
+    }
 
     if (window.innerWidth <= 768) {
       this.showLeftSidebar = false;
     }
-
-    this.loadTasks();
   }
 
   createNewTask(): void {
@@ -194,7 +229,6 @@ export class TodoHomeComponent implements OnInit {
     this.showLeftSidebar = false;
     this.showRightSidebar = false;
   }
-  
 
   onTaskSaved(task: Task): void {
     this.isLoading = true;

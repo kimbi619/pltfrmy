@@ -1,0 +1,111 @@
+# 📝 ToDo Application
+
+[![Node.js](https://img.shields.io/badge/Backend-Node.js-brightgreen)](https://nodejs.org/)
+[![Express](https://img.shields.io/badge/Backend-Express.js-blue)](https://expressjs.com/)
+[![Prisma](https://img.shields.io/badge/ORM-Prisma-orange)](https://www.prisma.io/)
+[![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-blue)](https://www.postgresql.org/)
+[![Angular](https://img.shields.io/badge/Frontend-Angular-red)](https://angular.io/)
+
+A simple full-stack **ToDo list application** developed as part of a coding interview.  
+The app allows users to create, manage, and delete todos.  
+Backend is built with **Node.js**, **Express**, **Prisma**, and **PostgreSQL**.  
+Frontend is built with **Angular 19**.
+
+## 📁 Project Structure
+
+
+## 🚀 Backend Setup (Node.js + Express)
+
+### 📦 Prerequisites
+
+- Node.js >= 16.x
+- PostgreSQL >= 12.x
+- Yarn (`npm install --global yarn`)
+
+### 🔧 Environment Setup
+
+1. Create a PostgreSQL database named `todo`
+2. Copy `.env.example` to `.env` in the `backend/` directory:
+
+```env
+DATABASE_URL=postgres://postgres:prodigy@localhost:5432/todo
+PORT=5000
+NODE_ENV=development
+
+JWT_SECRET=lsdkhfaoiwnASOINIonw@ESAsdifnliasdna3242ansd2lasinafoli?ANSDFIN
+ACCESS_TOKEN_SECRET=lsdkhfaoiwnASOINIonw@ESAsdifnliasdna3242ansd2lasinafoli?ANSDFIN
+REFRESH_TOKEN_SECRET=lsdkhfaoiwnASOINIonw@ESAsdifnliasdna3242ansd2lasinafoli?ANSDFIN
+ACCESS_TOKEN_EXPIRY=3d
+REFRESH_TOKEN_EXPIRY=30d
+
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GOOGLE_REDIRECT_URI=http://localhost:4200/calendar-callback
+
+EMAIL_SERVICE=gmail
+EMAIL_USER=kimbidarl@gmail.com
+EMAIL_PASSWORD=sryzkthlehixqtvx
+EMAIL_FROM=kimbidarl@gmail.com
+```
+
+## Install Dependencies
+``` bash
+cd backend
+yarn
+```
+
+## Migrate Database with Prisma
+
+```bash
+yarn prisma migrate dev --name init
+```
+
+## Start the Server
+```bash
+yarn dev       # Runs with nodemon
+# or
+yarn start     # Runs normally
+```
+
+===================================================
+### Frontend Setup (Angular 19)
+
+## Prerequisites
+Angular CLI v15+
+
+**Node.js >= 16.x**
+
+## Install Dependencies
+
+```bash
+cd frontend
+yarn
+```
+## Start the Application
+```bash
+ng serve
+```
+App will be available at http://localhost:4200
+
+## Features
+✅ JWT-based authentication
+
+✅ CRUD for todos
+
+✅ Email integration
+
+✅ Google Calendar integration (callback setup)
+
+✅ Responsive Angular frontend
+
+## Contribution
+This project was built as a technical interview submission.
+Feel free to fork it or adapt it for your own learning or use.
+
+
+
+
+
+
+
+
