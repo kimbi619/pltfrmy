@@ -71,9 +71,9 @@ DATABASE_URL=postgres://postgres:prodigy@localhost:5432/todo
 PORT=5000
 NODE_ENV=development
 
-JWT_SECRET=lsdkhfaoiwnASOINIonw@ESAsdifnliasdna3242ansd2lasinafoli?ANSDFIN
-ACCESS_TOKEN_SECRET=lsdkhfaoiwnASOINIonw@ESAsdifnliasdna3242ansd2lasinafoli?ANSDFIN
-REFRESH_TOKEN_SECRET=lsdkhfaoiwnASOINIonw@ESAsdifnliasdna3242ansd2lasinafoli?ANSDFIN
+JWT_SECRET=
+ACCESS_TOKEN_SECRET=
+REFRESH_TOKEN_SECRET=
 ACCESS_TOKEN_EXPIRY=3d
 REFRESH_TOKEN_EXPIRY=30d
 
@@ -82,9 +82,9 @@ GOOGLE_CLIENT_SECRET=
 GOOGLE_REDIRECT_URI=http://localhost:4200/calendar-callback
 
 EMAIL_SERVICE=gmail
-EMAIL_USER=kimbidarl@gmail.com
+EMAIL_USER=
 EMAIL_PASSWORD=
-EMAIL_FROM=kimbidarl@gmail.com
+EMAIL_FROM=
 ```
 
 ## Install Dependencies
