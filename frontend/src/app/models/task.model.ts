@@ -12,10 +12,11 @@ export interface Task {
   user_id?: string;
   subtasks?: Subtask[];
   categories?: Category[];
-  tags?: Tag[];
+  category?: string | Category;
+  tags?: (string | Tag)[];
   comments?: Comment[];
-  parent?: number; 
-  isNew?: boolean; 
+  parent?: number;
+  isNew?: boolean;
 }
 
 export interface Subtask {
@@ -62,11 +63,11 @@ export interface Comment {
 export interface TaskRequest {
   title: string;
   description?: string;
-  category?: string;
+  category?: string; 
   due_date?: string;
   start_date?: string;
   status?: string;
   priority?: string;
-  tags?: string[];
+  tags?: string[];  
   parent?: number;
 }

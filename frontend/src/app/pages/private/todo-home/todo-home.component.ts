@@ -4,7 +4,7 @@ import { SidebarComponent } from '../../../components/sidebar/sidebar.component'
 import { TodoListComponent } from '../../../components/list/list.component';
 import { AsideRightComponent } from '../../../components/aside-right/aside-right.component';
 import { TaskService } from '../../../services/task.service';
-import { Task } from '../../../models/task.model';
+import { Task, TaskRequest } from '../../../models/task.model';
 
 @Component({
   selector: 'app-todo-home',
@@ -29,7 +29,15 @@ import { Task } from '../../../models/task.model';
           </button>
         </div>
 
-        <div *ngIf="filteredTasks.length === 0" class="no-tasks">
+        <div *ngIf="error" class="error-message">
+          {{ error }}
+        </div>
+
+        <div *ngIf="isLoading" class="loading-indicator">
+          Loading tasks...
+        </div>
+
+        <div *ngIf="!isLoading && filteredTasks.length === 0" class="no-tasks">
           No tasks available.
         </div>
 
@@ -44,6 +52,8 @@ import { Task } from '../../../models/task.model';
         <app-aside-right
           [selectedTask]="selectedTask"
           (close)="closeTaskDetail()"
+          (taskSaved)="onTaskSaved($event)"
+          (taskDeleted)="onTaskDeleted($event)"
         />
       </div>
 
@@ -76,7 +86,6 @@ export class TodoHomeComponent implements OnInit {
   ngOnInit(): void {
     this.checkScreenSize();
     window.addEventListener('resize', this.checkScreenSize.bind(this));
-
     this.loadTasks();
   }
 
@@ -104,9 +113,8 @@ export class TodoHomeComponent implements OnInit {
         filterParams = { category: this.selectedSection };
     }
 
-    this.taskService.getAllTasks().subscribe({
+    this.taskService.getTasksByFilter(filterParams).subscribe({
       next: (tasks) => {
-        console.log('Tasks received in component:', tasks);
         this.filteredTasks = tasks;
         this.isLoading = false;
       },
@@ -155,7 +163,7 @@ export class TodoHomeComponent implements OnInit {
       subtasks: [],
       tags: [],
       isNew: true,
-    };
+    } as Task;
 
     this.showRightSidebar = true;
   }
@@ -186,68 +194,77 @@ export class TodoHomeComponent implements OnInit {
     this.showLeftSidebar = false;
     this.showRightSidebar = false;
   }
+  
 
   onTaskSaved(task: Task): void {
+    this.isLoading = true;
+    this.error = '';
+
+    const tagStrings = task.tags?.map(tag => typeof tag === 'string' ? tag : tag.name) || [];
+
+    const taskData: TaskRequest = {
+      title: task.title,
+      description: task.description,
+      category: task.category as string,
+      due_date: task.due_date,
+      start_date: task.due_date,
+      status: task.status,
+      priority: task.priority,
+      tags: tagStrings,
+    };
+
     if (task.isNew) {
-      this.taskService
-        .createTask({
-          title: task.title,
-          description: task.description,
-          category: task.categories?.[0]?.name,
-          due_date: task.due_date,
-          start_date: task.start_date,
-          status: task.status,
-          priority: task.priority,
-          tags: task.tags?.map((tag) => tag.name),
-        })
-        .subscribe({
-          next: () => {
-            this.closeTaskDetail();
-            this.loadTasks();
-          },
-          error: (err) => {
-            this.error = err.message || 'Failed to create task';
-          },
-        });
+      this.taskService.createTask(taskData).subscribe({
+        next: (newTask) => {
+          this.isLoading = false;
+          this.closeTaskDetail();
+          this.loadTasks();
+        },
+        error: (err) => {
+          this.isLoading = false;
+          this.error = err.message || 'Failed to create task';
+          console.error('Error creating task:', err);
+        },
+      });
     } else if (task.id) {
-      this.taskService
-        .updateTask(task.id, {
-          title: task.title,
-          description: task.description,
-          category: task.categories?.[0]?.name,
-          due_date: task.due_date,
-          start_date: task.start_date,
-          status: task.status,
-          priority: task.priority,
-          tags: task.tags?.map((tag) => tag.name),
-        })
-        .subscribe({
-          next: () => {
-            this.closeTaskDetail();
-            this.loadTasks();
-          },
-          error: (err) => {
-            this.error = err.message || 'Failed to update task';
-          },
-        });
+      this.taskService.updateTask(task.id, taskData).subscribe({
+        next: () => {
+          this.isLoading = false;
+          this.closeTaskDetail();
+          this.loadTasks();
+        },
+        error: (err) => {
+          this.isLoading = false;
+          this.error = err.message || 'Failed to update task';
+          console.error('Error updating task:', err);
+        },
+      });
     }
   }
 
   onTaskDeleted(taskId: number): void {
     if (!taskId) return;
 
+    this.isLoading = true;
+    this.error = '';
+
     this.taskService.deleteTask(taskId).subscribe({
       next: () => {
+        this.isLoading = false;
         this.closeTaskDetail();
         this.loadTasks();
       },
       error: (err) => {
+        this.isLoading = false;
         this.error = err.message || 'Failed to delete task';
+        console.error('Error deleting task:', err);
       },
     });
   }
 
   onTaskStatusChanged(event: { taskId: number; status: string }): void {
+    if (!event || !event.taskId) return;
+
     this.taskService.updateTaskStatus(event.taskId, event.status).subscribe({
       next: () => {
         if (this.selectedSection.toLowerCase() === 'completed') {
@@ -256,6 +273,7 @@ export class TodoHomeComponent implements OnInit {
       },
       error: (err) => {
         this.error = err.message || 'Failed to update task status';
+        console.error('Error updating task status:', err);
       },
     });
   }

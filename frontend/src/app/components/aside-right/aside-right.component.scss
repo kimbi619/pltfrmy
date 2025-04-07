@@ -41,17 +41,18 @@
   font-size: 1rem;
   font-weight: 500;
   border: 1px solid var(--border-color);
-  border-radius: 4px;
-  background-color: #ffffffd7;
+  border-radius: 6px;
+  background-color: #ffffffb6;
 }
 
 .task-description textarea {
   width: 100%;
   padding: 0.75rem;
   border: 1px solid var(--border-color);
-  border-radius: 4px;
+  border-radius: 6px;
   resize: vertical;
-  background-color: #ffffffd7;
+  background-color: #ffffffaf;
+  resize: none;
 }
 
 .task-meta {
@@ -75,7 +76,7 @@
 .meta-item select {
   padding: 0.5rem;
   border: 1px solid var(--border-color);
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 .task-tags {

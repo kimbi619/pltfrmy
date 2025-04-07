@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Task } from '../../models/task.model';
+import { Task, Tag } from '../../models/task.model';
 
 @Component({
   selector: 'app-list',
@@ -29,7 +29,7 @@ import { Task } from '../../models/task.model';
             
             <div *ngIf="task.tags && task.tags.length > 0" class="task-tags">
               <span *ngFor="let tag of task.tags" class="task-tag">
-                {{ tag?.name || 'Unnamed tag' }}
+                {{ getTagDisplay(tag) }}
               </span>
             </div>
           </div>
@@ -70,6 +70,13 @@ export class TodoListComponent {
 
   getPriorityClass(task: Task): string {
     return task.priority ? task.priority.toLowerCase() : 'medium';
+  }
+  
+  getTagDisplay(tag: any): string {
+    if (typeof tag === 'string') {
+      return tag;
+    }
+    return tag?.name || 'Unnamed tag';
   }
 }
 

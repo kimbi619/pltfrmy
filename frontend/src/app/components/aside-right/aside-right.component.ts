@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Task } from '../../models/task.model';
 
 @Component({
   selector: 'app-aside-right',
@@ -8,9 +9,11 @@ import { FormsModule } from '@angular/forms';
   imports: [CommonModule, FormsModule],
   template: `
     <div class="sidebar">
-
       <div class="sidebar-header">
-        <h3>{{ selectedTask?.isNew ? 'Create Task' : 'Task Details' }}</h3>
+        <h3 *ngIf="selectedTask">{{ selectedTask.isNew ? 'Create Task' : 'Task Details' }}</h3>
+        <button class="close-btn" (click)="close.emit()">
+          <i class="fas fa-times"></i>
+        </button>
       </div>
 
       <div class="task-details" *ngIf="selectedTask">
@@ -20,17 +23,17 @@ import { FormsModule } from '@angular/forms';
             [(ngModel)]="selectedTask.title"
             placeholder="Task title"
             class="title-input"
-            />
-          </div>
-          
-          <div class="meta-item">
-            <label>Category</label>
-            <select [(ngModel)]="selectedTask.category">
-              <option value="personal" >Personal</option>
-              <option value="work">Work</option>
-              <option value="fun">Fun</option>
-            </select>
-          </div>
+          />
+        </div>
+
+        <div class="meta-item">
+          <label>Category</label>
+          <select [(ngModel)]="selectedCategory">
+            <option value="personal">Personal</option>
+            <option value="work">Work</option>
+            <option value="fun">Fun</option>
+          </select>
+        </div>
 
         <div class="task-description">
           <textarea
@@ -43,15 +46,15 @@ import { FormsModule } from '@angular/forms';
         <div class="task-meta">
           <div class="meta-item">
             <label>Due date</label>
-            <input type="date" [(ngModel)]="selectedTask.dueDate" />
+            <input type="date" [(ngModel)]="selectedTask.due_date" />
           </div>
 
           <div class="meta-item">
             <label>Priority</label>
             <select [(ngModel)]="selectedTask.priority">
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
             </select>
           </div>
         </div>
@@ -60,7 +63,7 @@ import { FormsModule } from '@angular/forms';
           <label>Tags</label>
           <div class="tags-container">
             <span *ngFor="let tag of selectedTask.tags || []" class="tag">
-              {{ tag?.name || tag }}
+              {{ getTagDisplay(tag) }}
               <i class="fas fa-times" (click)="removeTag(tag)"></i>
             </span>
             <input
@@ -123,55 +126,100 @@ import { FormsModule } from '@angular/forms';
   `,
   styleUrl: './aside-right.component.scss',
 })
-export class AsideRightComponent {
-  @Input() selectedTask: any;
+export class AsideRightComponent implements OnChanges {
+  @Input() selectedTask: Task | null = null;
   @Output() close = new EventEmitter<void>();
+  @Output() taskSaved = new EventEmitter<Task>();
+  @Output() taskDeleted = new EventEmitter<number>();
+
+  selectedCategory: string = '';
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['selectedTask'] && this.selectedTask) {
+      if (this.selectedTask.categories && this.selectedTask.categories.length > 0) {
+        this.selectedCategory = this.selectedTask.categories[0].name;
+      } else if (this.selectedTask.category) {
+        this.selectedCategory = typeof this.selectedTask.category === 'string' ? 
+          this.selectedTask.category : this.selectedTask.category.name;
+      } else {
+        this.selectedCategory = 'personal';
+      }
+    }
+  }
+
+  getTagDisplay(tag: any): string {
+    if (typeof tag === 'string') {
+      return tag;
+    }
+    return tag?.name || 'Unnamed tag';
+  }
 
   addTag(tag: string) {
-    if (!tag.trim()) return;
+    if (!tag.trim() || !this.selectedTask) return;
 
     if (!this.selectedTask.tags) {
       this.selectedTask.tags = [];
     }
 
-    if (!this.selectedTask.tags.includes(tag)) {
-      this.selectedTask.tags.push(tag);
-    }
+    this.selectedTask.tags.push(tag);
   }
 
-  removeTag(tag: string) {
-    this.selectedTask.tags = this.selectedTask.tags.filter(
-      (t: string) => t !== tag
-    );
+  removeTag(tag: any) {
+    if (!this.selectedTask || !this.selectedTask.tags) return;
+
+    this.selectedTask.tags = this.selectedTask.tags.filter(t => {
+      if (typeof t === 'string' && typeof tag === 'string') {
+        return t !== tag;
+      } else if (typeof t === 'object' && typeof tag === 'object') {
+        return t.id !== tag.id;
+      } else if (typeof t === 'string' && typeof tag === 'object') {
+        return t !== tag.name;
+      } else if (typeof t === 'object' && typeof tag === 'string') {
+        return t.name !== tag;
+      }
+      return true;
+    });
   }
 
   addSubtask(title: string) {
-    if (!title.trim()) return;
+    if (!title.trim() || !this.selectedTask) return;
 
     if (!this.selectedTask.subtasks) {
       this.selectedTask.subtasks = [];
     }
 
     this.selectedTask.subtasks.push({
-      id: Date.now(),
       title,
-      completed: false,
+      status: 'active',
+      priority: this.selectedTask.priority,
+      completed: false
     });
   }
 
   removeSubtask(subtask: any) {
+    if (!this.selectedTask || !this.selectedTask.subtasks) return;
+
     this.selectedTask.subtasks = this.selectedTask.subtasks.filter(
-      (t: any) => t.id !== subtask.id
+      s => s.id !== subtask.id
     );
   }
 
   saveTask() {
-    console.log('Saving task:', this.selectedTask);
-    this.close.emit();
+    if (!this.selectedTask) return;
+
+    const taskToSave = {
+      ...this.selectedTask,
+      category: this.selectedCategory,
+      tags: (this.selectedTask.tags || []).map(tag => 
+        typeof tag === 'string' ? tag : tag.name
+      )
+    };
+
+    this.taskSaved.emit(taskToSave);
   }
 
   deleteTask() {
-    console.log('Deleting task:', this.selectedTask);
-    this.close.emit();
+    if (!this.selectedTask || !this.selectedTask.id) return;
+    this.taskDeleted.emit(this.selectedTask.id);
   }
 }
