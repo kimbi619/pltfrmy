@@ -63,7 +63,9 @@ model Task {
 
   due_date DateTime
 
-  start_date DateTime
+  start_date DateTime @default(now())
+  
+  completed_at DateTime?
 
   created_at DateTime @default(now())
 
