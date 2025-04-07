@@ -11,6 +11,7 @@ const db = require('./config/database');
 
 const authRoutes = require('./routes/authRoutes');
 const taskRoutes = require('./routes/taskRoutes');
+const categoryRoutes = require('./routes/categoryRoutes');
 // const calendarRoutes = require('./routes/calendarRoutes');
 
 const app = express();
@@ -23,6 +24,7 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
+app.use('/api/categories', categoryRoutes);
 // app.use('/api/calendar', calendarRoutes);
 
 

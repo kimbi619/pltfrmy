@@ -1,4 +1,4 @@
-const categoryService = require('../services/categoryService');
+const categoryService = require('../services/categoryServices');
 
 exports.getAllCategories = async (req, res, next) => {
   try {
@@ -14,18 +14,31 @@ exports.getAllCategories = async (req, res, next) => {
   }
 };
 
-exports.getCategoryById = async (req, res, next) => {
+exports.getCategoriesById = async (req, res, next) => {
   try {
     const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: 'Category ID is required'
+      });
+    }
     const userId = req.user.id;
     
     const category = await categoryService.getCategoryById(parseInt(id), userId);
     
     if (!category) {
-      return apiResponse.notFound(res, 'Category not found');
+      return res.status(404).json({
+        success: false,
+        message: 'Category not found'
+      });
     }
     
-    return apiResponse.success(res, 'Category retrieved successfully', category);
+    return res.status(200).json({
+      success: true,
+      message: 'Category retrieved successfully',
+      category: category
+    });
   } catch (error) {
     next(error);
   }
@@ -92,7 +105,7 @@ exports.deleteCategory = async (req, res, next) => {
   }
 };
 
-exports.getTasksByCategory = async (req, res, next) => {
+exports.getTasksByCategories = async (req, res, next) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
@@ -104,7 +117,11 @@ exports.getTasksByCategory = async (req, res, next) => {
     }
     
     const tasks = await categoryService.getTasksByCategory(parseInt(id), userId);
-    return apiResponse.success(res, 'Tasks retrieved successfully', tasks);
+    return res.status(200).json({
+      success: true,
+      message: 'Tasks retrieved successfully',
+      tasks: tasks
+    });
   } catch (error) {
     next(error);
   }
