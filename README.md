@@ -5,6 +5,8 @@
 [![Prisma](https://img.shields.io/badge/ORM-Prisma-orange)](https://www.prisma.io/)
 [![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-blue)](https://www.postgresql.org/)
 [![Angular](https://img.shields.io/badge/Frontend-Angular-red)](https://angular.io/)
+[![Docker](https://img.shields.io/badge/Container-Docker-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
+[![Docker Compose](https://img.shields.io/badge/Orchestration-Docker_Compose-2496ED?logo=docker&logoColor=white)](https://docs.docker.com/compose/)
 
 A simple full-stack **ToDo list application** developed as part of a coding interview.  
 The app allows users to create, manage, and delete todos.  
@@ -13,6 +15,43 @@ Frontend is built with **Angular 19**.
 
 ## 📁 Project Structure
 
+## 🐳 Docker Setup (Recommended)
+
+The easiest way to run this application is using Docker Compose, which will set up all required services:
+
+### Prerequisites
+- [Docker](https://www.docker.com/get-started) installed
+- [Docker Compose](https://docs.docker.com/compose/install/) installed
+
+### Running with Docker Compose
+
+1. Clone the repository
+   ```bash
+   git clone https://github.com/yourusername/todo_app.git
+   cd todo_app
+   ```
+
+2. Start the application stack
+   ```bash
+   docker-compose up
+   ```
+
+3. Access the application
+   - Frontend: http://localhost:4200
+   - Backend API: http://localhost:5000
+
+### Rebuilding the Containers
+
+If you make changes to the code, rebuild the containers:
+```bash
+docker-compose up --build
+```
+
+### Stopping the Application
+
+```bash
+docker-compose down
+```
 
 ## 🚀 Backend Setup (Node.js + Express)
 
