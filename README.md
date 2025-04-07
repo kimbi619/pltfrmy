@@ -83,7 +83,7 @@ GOOGLE_REDIRECT_URI=http://localhost:4200/calendar-callback
 
 EMAIL_SERVICE=gmail
 EMAIL_USER=kimbidarl@gmail.com
-EMAIL_PASSWORD=sryzkthlehixqtvx
+EMAIL_PASSWORD=
 EMAIL_FROM=kimbidarl@gmail.com
 ```
 
